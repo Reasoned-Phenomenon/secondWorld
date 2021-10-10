@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>dom/empList.html</title>
+<style>
+	* {
+		font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	}
+
+
+</style>
+</head>
+<body>
+	<h3>사원등록</h3>
+
+	<div id = "add">
+		<div class="field">사원번호: <input type="text" id = "empId"></div>
+		<div class="field">이름: <input type="text" id = "lname"></div>
+		<div class="field">이메일: <input type="text" id = "email"></div>
+		<div class="field">입사일자: <input type="date" id = "hireDate"></div>
+		<div class="field">직무: <input type="text" id = "job" value="IT_PROG"></div>
+		<button id="addBtn">등록</button>
+	</div>
+
+	
+	<div id="show">
+	</div>
+	
+	<script src="emp.js"></script>
+	<script>
+		document.getElementById('addBtn').onclick = function () {
+			//사용자 입력값 가져와서...
+			// ajax() : 서버로 데이터 전송
+			// 응답 결과 : 화면에 정보추가.
+
+			let empId = document.getElementById('empId').value;
+			let lname = document.getElementById('lname').value;
+			let email = document.getElementById('email').value;
+			let hireDate = document.getElementById('hireDate').value;
+			let job = document.getElementById('job').value;
+			
+			if (empId == "" || lname == "" || email == "" || hireDate == "" || job == "") {
+				window.alert("필수입력항목 확인!");
+				return;
+			}
+			
+			let param = 'id=' + empId + '&name=' + lname + '&email=' + email + '&hireDate=' + hireDate +'&job=' + job;
+			
+			console.log(empId);
+
+			let xhtp = new XMLHttpRequest();
+			xhtp.onload = function () {
+				let data = JSON.parse(xhtp.responseText);
+				// {id:?, name:?, email:?, ..} -> object 타입
+				let tr = document.createElement('tr');
+				
+				for ( let field in data) {
+				let td = document.createElement('td');	
+				td.appendChild(document.createTextNode(data[field]));
+				tr.appendChild(td);
+				}
+				
+				 td = document.createElement('td');
+				 let btnTag = document.createElement('button')
+			     btnTag.innerHTML = '삭제';
+				 btnTag.onclick = function () {
+               		this.parentNode.parentNode.remove();
+            		}       
+				 td.appendChild(btnTag);	
+			     tr.appendChild(td);
+			     
+				document.querySelector('#show>table').appendChild(tr);
+				
+			}
+
+			xhtp.open('post','../AddEmpServlet');
+			xhtp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhtp.send(param);
+
+		}
+
+
+		function deleteEmp () {
+			// id값 가져와서 해당 tr 삭제
+			// 1) 해당 tr 삭제 + 2)DB의 데이터 삭제
+
+			// 1)
+			//버튼의 .parent는 td ,  .parent.parent -> tr
+			//parentNode.parentNode
+
+			//2
+			//DB의 데이터 삭제
+			// EmpDAO의 deleteEmp 메서드 사용.
+			
+
+		}
+	</script>
+</body>
+</html>
